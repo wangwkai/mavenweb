@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--namespace对应接口的全路径-->
+<mapper namespace="com.smbms.mapper.user.UserMapper">
+
+    <resultMap id="userList" type="User">
+        <result property="userRoleName" column="roleName"></result>
+    </resultMap>
+
+    <!--登录-->
+    <select id="getLoginUser" resultType="User">
+       select * from smbms_user where userCode=#{userCode} and userPassword=#{userPassword}
+    </select>
+
+    <!--查询用户列表-->
+    <select id="getUserList" resultMap="userList">
+        SELECT t1.*, t2.roleName FROM smbms_user t1 INNER JOIN smbms_role t2 ON t1.userRole=t2.id
+        <where>
+            <if test="userName!=null and userName !='' ">
+                userName LIKE "%"#{userName}"%"
+            </if>
+            <if test="userRole != null and userRole != 0 ">
+                and userRole = #{userRole}
+            </if>
+        </where>
+        limit #{startIndex}, #{pageSize}
+    </select>
+
+    <select id="getUserCount" resultType="int">
+        SELECT count(*) FROM smbms_user t1 INNER JOIN smbms_role t2 ON t1.userRole=t2.id
+        <where>
+            <if test="userName!=null and userName !='' ">
+                userName LIKE "%"#{userName}"%"
+            </if>
+            <if test="userRole != null and userRole != 0 ">
+                and userRole = #{userRole}
+            </if>
+        </where>
+    </select>
+
+    <!--添加用户-->
+    <insert id="add">
+      insert into smbms_user (userCode,userName,userPassword,
+					userRole,gender,birthday,phone,address,creationDate,createdBy,idPicPath)
+					values(#{userCode},#{userName},#{userPassword},#{userRole},#{gender},#{birthday},
+					#{phone},#{address},#{creationDate},#{createdBy},#{idPicPath})
+    </insert>
+
+
+
+</mapper>
